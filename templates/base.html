@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MOUNTAINS - High Altitude Expeditions & Trek Booking{% endblock %}</title>
+    <meta name="description" content="Discover world-class mountain treks, verified alpine expeditions, gear rentals, and 24/7 rescue support with MOUNTAINS.">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5.3 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-custom" id="mainNavbar">
+    <div class="container-fluid px-lg-5">
+        <a class="navbar-brand-logo" href="{{ url_for('index') }}">
+            M<span class="logo-peak">OUNTAINS</span>
+        </a>
+
+        <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list fs-2"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link-custom {% if request.endpoint == 'index' and not request.args.get('sec') %}active{% endif %}" href="{{ url_for('index') }}#home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link-custom" href="{{ url_for('index') }}#tours">Trending Treks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link-custom" href="{{ url_for('index') }}#search">Search Tours</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link-custom" href="{{ url_for('index') }}#shops">Shops &amp; Gear</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link-custom" href="{{ url_for('index') }}#reviews">Reviews</a>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#sosEmergencyModal">
+                    <span class="sos-badge-pulse me-1"></span> SOS 24/7
+                </button>
+                {% if current_user.is_authenticated %}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-white btn-sm dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i> {{ current_user.name.split(' ')[0] }}
+                            <span class="badge bg-secondary ms-1">{{ current_user.role }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg border-secondary">
+                            <li><h6 class="dropdown-header text-uppercase small text-muted">Account ({{ current_user.role }})</h6></li>
+                            <li><a class="dropdown-item" href="{{ url_for('dashboard') }}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                            {% if current_user.role == 'user' %}
+                                <li><a class="dropdown-item" href="{{ url_for('user_bookings') }}"><i class="bi bi-calendar-check me-2"></i> My Bookings</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('user_profile') }}"><i class="bi bi-gear me-2"></i> Profile & Safety</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider border-secondary"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-white btn-sm">Login</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-orange btn-sm">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Flash Alerts Container -->
+<div class="container position-fixed top-0 start-50 translate-middle-x mt-5 pt-4" style="z-index: 1050; max-width: 600px;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show shadow-lg border-0 mb-2" role="alert">
+                    <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<!-- Main Body Content -->
+<main class="site-main {% if request.endpoint == 'index' %}landing-page-mode{% else %}inner-page-wrapper{% endif %}">
+    {% block content %}{% endblock %}
+</main>
+
+<!-- 24/7 SOS Emergency Alert Modal -->
+<div class="modal fade" id="sosEmergencyModal" tabindex="-1" aria-labelledby="sosEmergencyLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header modal-header-dark border-danger bg-danger bg-opacity-10">
+                <h5 class="modal-title text-danger fw-bold" id="sosEmergencyLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> 24/7 Alpine Rescue SOS Dispatch
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('rescue_sos') }}" method="POST">
+                <div class="modal-body modal-body-dark">
+                    <p class="text-muted small">
+                        This alert broadcasts immediately to our mountain rescue commanders and certified high-altitude staff. Please provide the latest known coordinates and nature of distress.
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label text-light fw-semibold small">Emergency Category</label>
+                        <select class="form-select bg-dark text-white border-secondary" name="emergency_type" required>
+                            <option value="Medical (AMS / Acute Altitude Sickness)">Medical (AMS / Acute Altitude Sickness)</option>
+                            <option value="Injury / Fracture / Fall">Injury / Fracture / Fall</option>
+                            <option value="Lost Trail / Whiteout Blizzard">Lost Trail / Whiteout Blizzard</option>
+                            <option value="Severe Weather Stranded">Severe Weather Stranded</option>
+                            <option value="Equipment Failure / Hypothermia">Equipment Failure / Hypothermia</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-light fw-semibold small">GPS Coordinates / Landmark Description</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-dark text-white border-secondary" id="sosCoordsInput" name="coordinates" placeholder="e.g. 27.9542° N, 86.8211° E (Dingboche)" required>
+                            <button class="btn btn-outline-warning" type="button" onclick="getCurrentLocation()">
+                                <i class="bi bi-geo-alt-fill"></i> Auto-GPS
+                            </button>
+                        </div>
+                        <div class="form-text text-muted">Click Auto-GPS to fetch your device's exact location coordinates.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-light fw-semibold small">Associated Trek (Optional)</label>
+                        <select class="form-select bg-dark text-white border-secondary" name="trek_id">
+                            <option value="">-- General Expedition Route --</option>
+                            {% for t in g.all_treks_list if g.all_treks_list %}
+                                <option value="{{ t.id }}">{{ t.name }} ({{ t.destination }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-light fw-semibold small">Urgent Situation Notes</label>
+                        <textarea class="form-control bg-dark text-white border-secondary" name="notes" rows="3" placeholder="Condition of party, number of injured, visible weather or camp markers..."></textarea>
+                    </div>
+                    {% if not current_user.is_authenticated %}
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <label class="form-label text-light fw-semibold small">Your Name</label>
+                                <input type="text" class="form-control bg-dark text-white border-secondary" name="guest_name" placeholder="Full Name" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-light fw-semibold small">Contact Phone</label>
+                                <input type="text" class="form-control bg-dark text-white border-secondary" name="guest_phone" placeholder="Phone with country code" required>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="modal-footer modal-footer-dark">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold">
+                        <i class="bi bi-broadcast me-1"></i> Transmit Urgent SOS
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('mainNavbar');
+        if (window.scrollY > 40) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Auto GPS coordinate fetcher
+    function getCurrentLocation() {
+        const input = document.getElementById('sosCoordsInput');
+        if (navigator.geolocation) {
+            input.placeholder = "Acquiring GPS fix...";
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude.toFixed(4);
+                    const lon = pos.coords.longitude.toFixed(4);
+                    const alt = pos.coords.altitude ? ` (Alt: ${Math.round(pos.coords.altitude)}m)` : '';
+                    input.value = `${lat}° N, ${lon}° E${alt}`;
+                },
+                (err) => {
+                    alert("Could not access GPS device. Please enter coordinates manually.");
+                    input.placeholder = "e.g. 27.9542° N, 86.8211° E";
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by your browser.");
+        }
+    }
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

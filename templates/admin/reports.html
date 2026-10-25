@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-white btn-sm mb-2 rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
+            <h3 class="text-white fw-bold mb-0"><i class="bi bi-file-earmark-bar-graph text-warning me-2"></i> SQL DBMS Analytics &amp; Reports</h3>
+            <p class="text-white-50 small mb-0">Multi-table relational queries, aggregation views, and performance analytics.</p>
+        </div>
+    </div>
+
+    {% for r in reports %}
+    <div class="clean-table-card mb-4 p-4">
+        <h5 class="text-white fw-bold mb-1">{{ r.title }}</h5>
+        <p class="text-white-50 small mb-3">{{ r.note }}</p>
+
+        <div class="table-responsive rounded-3 overflow-hidden mb-3">
+            <table class="table-clean">
+                <thead>
+                    <tr>{% for c in r.columns %}<th>{{ c }}</th>{% endfor %}</tr>
+                </thead>
+                <tbody>
+                    {% for row in r.rows %}
+                    <tr>{% for c in r.columns %}<td>{{ row[c] }}</td>{% endfor %}</tr>
+                    {% else %}
+                    <tr><td colspan="{{ r.columns|length }}" class="text-center text-muted py-3">No data returned by query.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <details class="text-white-50 small">
+            <summary class="cursor-pointer text-warning">Inspect Executed PostgreSQL Query</summary>
+            <pre class="p-3 mt-2 rounded-3 small font-monospace text-info border border-secondary border-opacity-25" style="background: rgba(0,0,0,0.4);">{{ r.sql }}</pre>
+        </details>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

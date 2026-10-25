@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Pending Approval{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="clean-table-card p-5 text-center">
+                <div class="fs-1 text-warning mb-3">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <h3 class="text-white fw-bold mb-2">Staff Application Pending Commander Review</h3>
+                <p class="text-white-50 mb-4">
+                    Your mountain staff registration has been transmitted to the expedition command center. You will receive access to assigned trek rosters once verified.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-white px-4 py-2 rounded-pill">Return to Home</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger px-4 py-2 rounded-pill">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

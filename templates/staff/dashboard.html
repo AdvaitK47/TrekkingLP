@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Staff Dashboard{% endblock %}
+{% block content %}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="status-pill open mb-2">Mountain Staff Portal</span>
+            <h2 class="text-white fw-bold mb-0">Assigned Expedition Roster</h2>
+            <p class="text-white-50 small mb-0">Manage expedition operations, participant manifests, and departure milestones.</p>
+        </div>
+    </div>
+
+    <div class="clean-table-card">
+        <div class="table-responsive">
+            <table class="table-clean">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Expedition</th>
+                        <th>Location</th>
+                        <th>Slots Availability</th>
+                        <th>Status</th>
+                        <th>Trekkers Joined</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trek in treks %}
+                    <tr>
+                        <td class="font-monospace text-white-50">#{{ trek.id }}</td>
+                        <td><strong class="text-white">{{ trek.name }}</strong></td>
+                        <td class="text-white-50"><i class="bi bi-geo-alt text-warning me-1"></i>{{ trek.location }}</td>
+                        <td>
+                            <span class="text-white">{{ trek.available_slots }}</span>
+                            <span class="text-white-50">/ {{ trek.total_slots }}</span>
+                        </td>
+                        <td>
+                            <span class="status-pill {{ trek.status|lower }}">{{ trek.status }}</span>
+                        </td>
+                        <td>
+                            <span class="status-pill open py-1 px-2">{{ trek.booked_count }} Joined</span>
+                        </td>
+                        <td class="text-end text-nowrap">
+                            <a href="{{ url_for('staff_update_trek', trek_id=trek.id) }}" class="btn-action-edit me-1">
+                                <i class="bi bi-pencil-square"></i> Update
+                            </a>
+                            <a href="{{ url_for('staff_trek_participants', trek_id=trek.id) }}" class="btn-action-edit me-1" style="color: #cbd5e1; border-color: rgba(255,255,255,0.2);">
+                                <i class="bi bi-people"></i> Trekkers
+                            </a>
+                            {% if trek.status == 'Closed' %}
+                            <form method="POST" action="{{ url_for('staff_mark_trek', trek_id=trek.id, state='started') }}" class="d-inline">
+                                <button class="btn-action-approve me-1">Start Expedition</button>
+                            </form>
+                            {% endif %}
+                            {% if trek.status != 'Completed' %}
+                            <form method="POST" action="{{ url_for('staff_mark_trek', trek_id=trek.id, state='completed') }}" class="d-inline">
+                                <button class="btn-action-delete">Mark Completed</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">No expeditions assigned to your guide account yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

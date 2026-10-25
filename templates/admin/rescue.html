@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Rescue Operations Management - Admin{% endblock %}
+{% block content %}
+<div class="container py-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-white btn-sm mb-2 rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
+            <h3 class="text-white fw-bold mb-0"><i class="bi bi-broadcast text-danger me-2"></i> Alpine Rescue &amp; Emergency Dispatches</h3>
+            <p class="text-white-50 small mb-0">Live satellite distress alerts, medical telemetry, and guide dispatch protocol.</p>
+        </div>
+        <button class="btn btn-danger px-4 py-2 rounded-pill fw-bold" data-bs-toggle="modal" data-bs-target="#sosEmergencyModal">
+            <i class="bi bi-exclamation-triangle-fill me-1"></i> New Emergency Alert
+        </button>
+    </div>
+
+    <div class="clean-table-card">
+        <div class="table-responsive">
+            <table class="table-clean">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Alert Time</th>
+                        <th>Distressed Trekker</th>
+                        <th>Emergency Type</th>
+                        <th>Last Coordinates</th>
+                        <th>Assigned Guide</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ro in rescues %}
+                    <tr>
+                        <td class="font-monospace text-white-50">#{{ ro.id }}</td>
+                        <td class="small text-white-50">{{ ro.alert_time }}</td>
+                        <td>
+                            <strong class="text-white">{{ ro.trekker_name }}</strong>
+                            <div class="small text-muted">{{ ro.trekker_contact }}</div>
+                            {% if ro.emergency_contact_phone %}
+                                <div class="small text-warning fw-semibold">ICE: {{ ro.emergency_contact_phone }}</div>
+                            {% endif %}
+                        </td>
+                        <td><span class="status-pill hard">{{ ro.emergency_type }}</span></td>
+                        <td><span class="font-monospace small text-info">{{ ro.last_coordinates }}</span></td>
+                        <td>
+                            {% if ro.staff_name %}
+                                <span class="text-success fw-semibold"><i class="bi bi-person-check-fill me-1"></i> {{ ro.staff_name }}</span>
+                            {% else %}
+                                <span class="text-warning fst-italic">Unassigned</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if ro.status == 'Resolved' %}
+                                <span class="status-pill success">Resolved</span>
+                            {% elif ro.status == 'In Progress' %}
+                                <span class="status-pill inprogress">In Progress</span>
+                            {% else %}
+                                <span class="status-pill active">Active SOS</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Update
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                                    <li>
+                                        <form action="{{ url_for('admin_update_rescue_status', rescue_id=ro.id) }}" method="POST">
+                                            <input type="hidden" name="status" value="In Progress">
+                                            <button type="submit" class="dropdown-item text-warning">Mark In Progress</button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form action="{{ url_for('admin_update_rescue_status', rescue_id=ro.id) }}" method="POST">
+                                            <input type="hidden" name="status" value="Resolved">
+                                            <button type="submit" class="dropdown-item text-success">Mark Resolved</button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form action="{{ url_for('admin_update_rescue_status', rescue_id=ro.id) }}" method="POST">
+                                            <input type="hidden" name="status" value="Active">
+                                            <button type="submit" class="dropdown-item text-danger">Reopen Active</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">No rescue operations on record.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

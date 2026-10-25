@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Customer Reviews Management - Admin{% endblock %}
+{% block content %}
+<div class="container py-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-white btn-sm mb-2 rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
+            <h3 class="text-white fw-bold mb-0"><i class="bi bi-star-fill text-warning me-2"></i> Trekkers Reviews &amp; Moderation</h3>
+            <p class="text-white-50 small mb-0">Verified ratings, trail feedback, and community moderation.</p>
+        </div>
+    </div>
+
+    <div class="clean-table-card">
+        <div class="table-responsive">
+            <table class="table-clean">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Trekker Name</th>
+                        <th>Expedition</th>
+                        <th>Rating</th>
+                        <th>Feedback Comment</th>
+                        <th>Date Published</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reviews %}
+                    <tr>
+                        <td class="font-monospace text-white-50">#{{ r.id }}</td>
+                        <td><strong class="text-white">{{ r.user_name }}</strong></td>
+                        <td><span class="text-info fw-semibold">{{ r.trek_name }}</span></td>
+                        <td>
+                            <span class="stars-gold">
+                                {% for i in range(r.rating) %}★{% endfor %}
+                            </span>
+                        </td>
+                        <td class="small text-white-50" style="max-width: 360px;">"{{ r.comment }}"</td>
+                        <td class="small text-white-50">{{ r.created_at }}</td>
+                        <td class="text-end">
+                            <form action="{{ url_for('admin_delete_review', review_id=r.id) }}" method="POST" onsubmit="return confirm('Delete this review permanently?');">
+                                <button type="submit" class="btn-action-delete">
+                                    <i class="bi bi-trash3"></i> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">No reviews submitted yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="clean-table-card p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <span class="status-pill open mb-2">New Membership</span>
+                    <h3 class="text-white fw-bold mb-1">Join MOUNTAINS</h3>
+                    <p class="text-white-50 small mb-0">Create your account for expedition bookings or mountain guiding.</p>
+                </div>
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label text-white small">Account Type</label>
+                        <select name="role" class="form-select bg-dark text-white border-secondary" required>
+                            <option value="user">User (Trekker &amp; Explorer)</option>
+                            <option value="staff">Mountain Staff (Guide / Dispatcher)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white small">Full Legal Name</label>
+                        <input type="text" name="name" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Sarah Jenkins" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white small">Choose Username</label>
+                        <input type="text" name="username" class="form-control bg-dark text-white border-secondary" placeholder="e.g. sjenkins" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white small">Email Address</label>
+                        <input type="email" name="email" class="form-control bg-dark text-white border-secondary" placeholder="sarah@example.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white small">Contact / Emergency Phone</label>
+                        <input type="text" name="contact" class="form-control bg-dark text-white border-secondary" placeholder="+1-555-0192">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-white small">Create Password</label>
+                        <input type="password" name="password" class="form-control bg-dark text-white border-secondary" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-orange w-100 py-2 fw-bold">Register Account</button>
+                </form>
+
+                <p class="mt-4 mb-0 text-center small text-white-50">
+                    Already have an account? <a href="{{ url_for('login') }}" class="text-warning text-decoration-none fw-semibold">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

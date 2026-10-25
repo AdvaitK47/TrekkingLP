@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Update Trek{% endblock %}
+{% block content %}
+<div class="container py-3">
+    <div class="mb-4">
+        <a href="{{ url_for('staff_dashboard') }}" class="btn btn-outline-white btn-sm mb-2 rounded-pill px-3">
+            <i class="bi bi-arrow-left me-1"></i> Back to Roster
+        </a>
+        <h3 class="text-white fw-bold mb-0">Update Expedition &bull; {{ trek.name }}</h3>
+        <p class="text-white-50 small mb-0">Adjust participant capacity and departure lifecycle status.</p>
+    </div>
+
+    <div class="clean-table-card p-4" style="max-width:550px;">
+        <div class="p-3 glass-panel-subtle mb-3">
+            <div class="small text-white-50">Current Enlistment:</div>
+            <div class="text-white fw-bold">{{ trek.booked_count }} confirmed trekkers &bull; <span class="text-success">{{ trek.available_slots }} slots open</span></div>
+        </div>
+
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label text-white small">Total Capacity Slots</label>
+                <input type="number" min="{{ trek.booked_count if trek.booked_count > 0 else 1 }}" name="total_slots"
+                       class="form-control bg-dark text-white border-secondary" value="{{ trek.total_slots }}" required>
+            </div>
+            <div class="mb-4">
+                <label class="form-label text-white small">Expedition Status</label>
+                <select name="status" class="form-select bg-dark text-white border-secondary">
+                    {% for st in ["Open", "Closed", "Completed"] %}
+                    <option value="{{ st }}" {% if trek.status == st %}selected{% endif %}>{{ st }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-orange px-4 py-2 rounded-pill fw-bold">Save Changes</button>
+                <a href="{{ url_for('staff_dashboard') }}" class="btn btn-outline-white px-3 rounded-pill">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

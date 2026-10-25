@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Manage Staff - Admin{% endblock %}
+{% block content %}
+<div class="container py-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-white btn-sm mb-2 rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
+            <h3 class="text-white fw-bold mb-0">Mountain Expedition Staff</h3>
+            <p class="text-white-50 small mb-0">Review certified mountain guides, expedition leaders, and commander approvals.</p>
+        </div>
+    </div>
+
+    <div class="clean-table-card">
+        <div class="table-responsive">
+            <table class="table-clean">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Guide Name</th>
+                        <th>Username</th>
+                        <th>Contact</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in staff %}
+                    <tr>
+                        <td class="font-monospace text-white-50">#{{ s.id }}</td>
+                        <td><strong class="text-white">{{ s.name }}</strong></td>
+                        <td class="text-info font-monospace">{{ s.username }}</td>
+                        <td class="text-white-50">{{ s.contact or "N/A" }}</td>
+                        <td><span class="badge bg-primary bg-opacity-25 text-info border border-primary border-opacity-25 text-uppercase" style="font-size: 0.7rem;">Staff</span></td>
+                        <td>
+                            <span class="status-pill {{ s.status|lower }}">{{ s.status }}</span>
+                        </td>
+                        <td class="text-end">
+                            {% if s.status == 'pending' %}
+                            <form method="POST" action="{{ url_for('admin_approve_staff', user_id=s.id) }}" class="d-inline">
+                                <button type="submit" class="btn-action-approve me-1">
+                                    <i class="bi bi-check-lg"></i> Approve
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('admin_blacklist_staff', user_id=s.id) }}" class="d-inline" onsubmit="return confirm('Reject staff applicant {{ s.name }}?');">
+                                <button type="submit" class="btn-action-delete">
+                                    <i class="bi bi-x-lg"></i> Reject
+                                </button>
+                            </form>
+                            {% elif s.status == 'approved' %}
+                            <form method="POST" action="{{ url_for('admin_blacklist_staff', user_id=s.id) }}" class="d-inline" onsubmit="return confirm('Blacklist staff member {{ s.name }}?');">
+                                <button type="submit" class="btn-action-delete">
+                                    <i class="bi bi-slash-circle"></i> Blacklist
+                                </button>
+                            </form>
+                            {% else %}
+                            <form method="POST" action="{{ url_for('admin_reinstate_staff', user_id=s.id) }}" class="d-inline">
+                                <button type="submit" class="btn-action-approve">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Reinstate
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">No staff members registered yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
